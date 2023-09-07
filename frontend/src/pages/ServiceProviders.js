@@ -38,18 +38,11 @@ const ServiceProviders = () => {
                   setOpenModal(true);
                 }}
               >
-                Toggle modal
+                Book an appointment
               </button>
             </div>
           </div>
         ))}
-      {/* <button
-        onClick={() => {
-          setOpenModal(true);
-        }}
-      >
-        helo
-      </button> */}
       {openModal && <Modal closeModal={setOpenModal} />}
     </div>
   );

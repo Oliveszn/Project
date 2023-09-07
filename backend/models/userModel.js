@@ -17,11 +17,14 @@ const userSchema = new Schema(
     },
     company: {
       type: String,
-      required: true,
     },
     description: {
       type: String,
       required: true,
+    },
+    isServiceProvider: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
@@ -32,10 +35,11 @@ userSchema.statics.signup = async function (
   email,
   password,
   company,
-  description
+  description,
+  isServiceProvider
 ) {
   // validation
-  if (!email || !password || !company || !description) {
+  if (!email || !password || !description) {
     throw Error("All fields must be filled");
   }
   if (!validator.isEmail(email)) {
@@ -43,6 +47,11 @@ userSchema.statics.signup = async function (
   }
   if (!validator.isStrongPassword(password)) {
     throw Error("Password not strong enough");
+  }
+  if (company) {
+    isServiceProvider = true;
+  } else {
+    isServiceProvider = false;
   }
 
   const exists = await this.findOne({ email });
@@ -59,6 +68,7 @@ userSchema.statics.signup = async function (
     password: hash,
     company,
     description,
+    isServiceProvider,
   });
 
   return user;

@@ -1,4 +1,5 @@
 const Appointment = require("../models/appointmentModel");
+const User = require("../models/userModel");
 const mongoose = require("mongoose");
 
 // create new appointment
@@ -17,15 +18,20 @@ const mongoose = require("mongoose");
 // Create a new appointment
 const createAppointments = async (req, res) => {
   try {
-    const { serviceProvider, email, name } = req.body;
-    const appointment = new Appointment({ serviceProvider, email, name });
-    await appointment.save();
-    res.status(201).json(appointment);
+    const { company, email, name } = req.body;
+    const foundCompany = await User.findOne({ company: company });
+    if (foundCompany && foundCompany.isServiceProvider) {
+      const appointment = new Appointment({ email, name });
+      await appointment.save();
+      res.status(201).json(appointment);
+    } else {
+      res
+        .status(400)
+        .json({ message: "This company does not exist on the platfrom" });
+    }
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while booking the appointment." });
+    res.status(500).json({ error: error.message });
   }
 };
 

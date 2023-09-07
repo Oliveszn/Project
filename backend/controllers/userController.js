@@ -21,13 +21,18 @@ const loginUser = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-//////////////1//////////////
 // signup a user
 const signupUser = async (req, res) => {
-  const { email, password, company, description } = req.body;
+  const { email, password, company, description, isServiceProvider } = req.body;
 
   try {
-    const user = await User.signup(email, password, company, description);
+    const user = await User.signup(
+      email,
+      password,
+      company,
+      description,
+      isServiceProvider
+    );
 
     // create a token
     const token = createToken(user._id);
@@ -42,7 +47,6 @@ const signupUser = async (req, res) => {
 const getUsers = async (req, res) => {
   const users = await User.find({}).sort({ createdAt: -1 });
   res.status(200).json(users);
-  // res.json({ mssg: "olive" });
 };
 
 //get a single user
@@ -50,13 +54,13 @@ const getUser = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such workout" });
+    return res.status(404).json({ error: "No such user" });
   }
 
   const user = await User.findById(id);
 
   if (!user) {
-    return res.status(404).json({ error: "No such workout" });
+    return res.status(404).json({ error: "No such user" });
   }
 
   res.status(200).json(user);
